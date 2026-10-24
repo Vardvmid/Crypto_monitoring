@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Крипто-Монитор Ликвидности</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #0f172a; color: #e2e8f0; padding: 20px; }
+        h1 { text-align: center; color: #38bdf8; }
+        table { width: 100%; max-width: 900px; margin: 20px auto; border-collapse: collapse; background: #1e293b; }
+        th, td { padding: 12px; border-bottom: 1px solid #334155; text-align: left; }
+        th { background: #0ea5e9; color: #0f172a; }
+        .green { color: #4ade80; } .yellow { color: #facc15; } .red { color: #f87171; }
+    </style>
+</head>
+<body>
+    <h1>💧 Монитор ликвидности Топ-5</h1>
+    <div id="content">Загрузка...</div>
+    <script>
+        fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=5&page=1")
+        .then(r => r.json())
+        .then(data => {
+            let html = "<table><tr><th>Монета</th><th>Цена</th><th>Объём</th><th>Кап.</th><th>Ликвидность</th></tr>";
+            data.forEach(c => {
+                const ratio = (c.total_volume / c.market_cap * 100).toFixed(2);
+                let cls = ratio >= 10 ? "green" : ratio >= 3 ? "yellow" : "red";
+                html += `<tr><td>${c.name}</td><td>$${c.current_price}</td><td>$${(c.total_volume/1e9).toFixed(1)} млрд</td><td>$${(c.market_cap/1e9).toFixed(1)} млрд</td><td class="${cls}">${ratio}%</td></tr>`;
+            });
+            document.getElementById("content").innerHTML = html + "</table>";
+        });
+    </script>
+</body>
+</html>
